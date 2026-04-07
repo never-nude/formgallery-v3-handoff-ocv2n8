@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Form Gallery — Modern direction (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#08090d;
+    --ink-2:#10131a;
+    --ink-3:#171b25;
+    --cream:#f4ece1;
+    --cream-2:#e6d9c0;
+    --warm:#c9b896;
+    --gold:#c8a96a;
+    --gold-2:#dbbd7d;
+    --rule:rgba(244,236,225,.08);
+    --rule-2:rgba(244,236,225,.14);
+    --display:'Fraunces',Georgia,serif;
+    --sans:'Inter','Helvetica Neue',sans-serif;
+    --ease:cubic-bezier(.2,.8,.2,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--ink);color:var(--cream);font-family:var(--sans);font-weight:400;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{overflow-x:hidden;cursor:none}
+  a{color:inherit;text-decoration:none}
+  img,svg{display:block;max-width:100%}
+  ::selection{background:var(--gold);color:var(--ink)}
+
+  /* film grain */
+  body::before{
+    content:"";position:fixed;inset:-50%;pointer-events:none;z-index:300;opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* vignette */
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+    background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%);
+  }
+
+  /* custom cursor */
+  .cursor{position:fixed;left:0;top:0;width:8px;height:8px;border-radius:50%;background:var(--cream);pointer-events:none;z-index:400;mix-blend-mode:difference;transition:width .35s var(--ease),height .35s var(--ease),background .25s,opacity .2s}
+  .cursor.is-hover{width:62px;height:62px;background:var(--gold)}
+  .cursor.is-drag{width:88px;height:88px;background:var(--cream)}
+  @media(pointer:coarse){.cursor{display:none} body{cursor:auto}}
+
+  /* nav */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:200;
+    display:flex;align-items:center;gap:36px;
+    padding:22px 36px;
+    backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+    background:linear-gradient(180deg,rgba(8,9,13,.78),rgba(8,9,13,.18));
+    border-bottom:1px solid var(--rule);
+  }
+  .nav__brand{display:flex;align-items:baseline;gap:7px;font-family:var(--display);font-size:18px;font-weight:300;letter-spacing:.01em;font-variation-settings:"opsz" 144}
+  .nav__brand .b1{opacity:.7}
+  .nav__brand .b2{font-weight:500}
+  .nav__menu{display:flex;gap:36px;margin-left:auto;font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:500}
+  .nav__menu a{position:relative;opacity:.62;transition:opacity .35s var(--ease)}
+  .nav__menu a:hover{opacity:1}
+  .nav__menu a::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+  .nav__menu a:hover::after{transform:scaleX(1)}
+  .nav__cta{margin-left:24px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;padding:12px 22px;border:1px solid var(--rule-2);border-radius:999px;transition:background .35s var(--ease),color .35s var(--ease),border-color .35s}
+  .nav__cta:hover{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+  .nav__progress{position:absolute;left:0;bottom:-1px;height:1px;background:var(--gold);width:0%;transition:width .08s linear}
+
+  /* HERO */
+  .hero{
+    position:relative;min-height:100vh;display:grid;grid-template-columns:1fr 1.05fr;gap:60px;
+    align-items:center;padding:140px 36px 80px;overflow:hidden;
+  }
+  .hero__copy{position:relative;z-index:2;max-width:640px}
+  .hero__kicker{display:flex;align-items:center;gap:16px;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:34px}
+  .hero__kicker::before{content:"";display:block;width:54px;height:1px;background:var(--gold)}
+  .hero__title{
+    font-family:var(--display);font-weight:300;
+    font-size:clamp(64px,11.5vw,196px);
+    line-height:.84;letter-spacing:-.045em;
+    font-variation-settings:"opsz" 144;
+  }
+  .hero__title em{font-style:italic;font-weight:300;color:var(--gold-2)}
+  .hero__title .accent{position:relative;display:inline-block}
+  .hero__title .accent::after{
+    content:"";position:absolute;left:-8px;right:-8px;bottom:.12em;height:.04em;background:var(--gold);
+    transform:scaleX(0);transform-origin:left;animation:underline 2.4s 1.2s var(--ease) forwards;
+  }
+  @keyframes underline{to{transform:scaleX(1)}}
+  .hero__sub{margin-top:42px;max-width:480px;font-size:15px;line-height:1.6;color:rgba(244,236,225,.66);font-weight:300}
+  .hero__meta{margin-top:56px;display:grid;grid-template-columns:repeat(4,auto);gap:0 56px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,236,225,.55)}
+  .hero__meta b{display:block;font-family:var(--display);font-size:36px;font-weight:300;color:var(--cream);letter-spacing:-.025em;margin-bottom:4px;font-variation-settings:"opsz" 144}
+
+  .hero__media{
+    position:relative;height:84vh;min-height:600px;border-radius:6px;overflow:hidden;
+    background:radial-gradient(ellipse at 50% 40%,#fff8ec 0%,#ecdcc1 55%,#c9b896 100%);
+    box-shadow:0 80px 160px rgba(0,0,0,.7),0 30px 60px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.4);
+    will-change:transform;
+    transform-style:preserve-3d;
+  }
+  .hero__media svg{width:100%;height:100%}
+  .hero__media .floor{position:absolute;left:0;right:0;bottom:0;height:35%;background:linear-gradient(180deg,transparent,rgba(58,38,20,.18))}
+  .hero__chip{position:absolute;top:24px;left:24px;display:flex;align-items:center;gap:10px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#3a2614;background:rgba(244,236,225,.6);backdrop-filter:blur(8px);padding:9px 14px;border-radius:999px}
+  .hero__chip i{display:block;width:6px;height:6px;border-radius:50%;background:#c8a96a;animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+  .hero__caption{
+    position:absolute;left:36px;right:36px;bottom:28px;
+    display:flex;justify-content:space-between;align-items:flex-end;
+    font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(244,236,225,.5);z-index:3;
+  }
+  .hero__caption .scroll{display:flex;align-items:center;gap:14px}
+  .hero__caption .scroll i{display:block;width:60px;height:1px;background:var(--cream);opacity:.55;transform-origin:left;animation:dash 2.6s ease-in-out infinite}
+  @keyframes dash{0%,100%{transform:scaleX(.18)}50%{transform:scaleX(1)}}
+
+  /* generic section */
+  .section{position:relative;padding:160px 36px;border-top:1px solid var(--rule);z-index:2}
+  .section__head{display:grid;grid-template-columns:1.6fr 1fr;gap:60px;align-items:end;margin-bottom:80px}
+  .section__kicker{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:22px}
+  .section__title{
+    font-family:var(--display);font-weight:300;
+    font-size:clamp(48px,7.5vw,124px);
+    line-height:.88;letter-spacing:-.04em;
+    font-variation-settings:"opsz" 144;
+  }
+  .section__title em{font-style:italic;color:var(--gold-2)}
+  .section__lede{font-size:14px;line-height:1.7;color:rgba(244,236,225,.6);font-weight:300;max-width:380px;justify-self:end}
+
+  /* FEATURED EDITORIAL */
+  .feature{display:grid;grid-template-columns:1.05fr 1fr;gap:90px;align-items:center}
+  .feature__media{aspect-ratio:4/5;border-radius:6px;overflow:hidden;position:relative;background:radial-gradient(ellipse at 50% 40%,#fff8ec,#ecdcc1 60%,#c9b896);box-shadow:0 60px 120px rgba(0,0,0,.55),0 20px 40px rgba(0,0,0,.35)}
+  .feature__media svg{width:100%;height:100%}
+  .feature__index{position:absolute;top:24px;left:24px;font-family:var(--display);font-size:64px;font-weight:300;color:rgba(58,38,20,.18);letter-spacing:-.04em;line-height:.85;font-variation-settings:"opsz" 144}
+  .feature__body h3{font-family:var(--display);font-size:clamp(40px,5.4vw,82px);font-weight:300;line-height:.92;letter-spacing:-.035em;margin-bottom:34px;font-variation-settings:"opsz" 144}
+  .feature__body h3 em{font-style:italic;color:var(--gold-2)}
+  .feature__intro{font-size:16px;line-height:1.65;color:rgba(244,236,225,.78);font-weight:300;margin-bottom:36px;max-width:520px}
+  .feature__meta{display:grid;grid-template-columns:auto 1fr;gap:18px 32px;font-size:13px;color:rgba(244,236,225,.78);margin:36px 0 44px;border-top:1px solid var(--rule);padding-top:30px}
+  .feature__meta dt{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);padding-top:3px}
+  .feature__cta{display:inline-flex;align-items:center;gap:18px;padding:18px 30px;border:1px solid var(--gold);border-radius:999px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--cream);transition:background .4s var(--ease),color .4s var(--ease),padding .4s var(--ease)}
+  .feature__cta:hover{background:var(--gold);color:var(--ink);padding-right:38px}
+  .feature__cta::after{content:"→";font-family:var(--display);font-size:18px}
+
+  /* RAIL */
+  .rail-wrap{position:relative;margin:0 -36px;padding:0 36px}
+  .rail{display:flex;gap:30px;overflow-x:auto;padding-bottom:30px;scroll-snap-type:x proximity;scrollbar-width:none}
+  .rail::-webkit-scrollbar{display:none}
+  .rail__item{flex:0 0 380px;scroll-snap-align:start}
+  .rail__media{aspect-ratio:4/5;border-radius:6px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#fff8ec,#ecdcc1 60%,#c9b896);margin-bottom:24px;position:relative;transition:transform .8s var(--ease),box-shadow .8s var(--ease)}
+  .rail__item:hover .rail__media{transform:translateY(-12px);box-shadow:0 50px 90px rgba(0,0,0,.55)}
+  .rail__media svg{width:100%;height:100%}
+  .rail__num{position:absolute;top:18px;right:22px;font-family:var(--display);font-size:13px;color:rgba(58,38,20,.5);letter-spacing:.1em}
+  .rail__kicker{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+  .rail__title{font-family:var(--display);font-size:24px;font-weight:300;line-height:1.1;letter-spacing:-.015em;font-variation-settings:"opsz" 144;max-width:340px}
+  .rail__sub{margin-top:8px;font-size:12px;color:rgba(244,236,225,.5)}
+  .rail-hint{margin-top:24px;display:flex;justify-content:flex-end;gap:18px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(244,236,225,.4)}
+  .rail-hint span{display:flex;align-items:center;gap:10px}
+  .rail-hint i{display:block;width:30px;height:1px;background:rgba(244,236,225,.3)}
+
+  /* GALLERIES */
+  .galleries{display:grid;grid-template-columns:repeat(3,1fr);gap:36px}
+  .gcard{position:relative;aspect-ratio:4/5;border-radius:6px;overflow:hidden;transition:transform .8s var(--ease)}
+  .gcard:hover{transform:translateY(-12px)}
+  .gcard__media{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#fff8ec,#ecdcc1 60%,#c9b896);transition:transform 1.2s var(--ease)}
+  .gcard:hover .gcard__media{transform:scale(1.06)}
+  .gcard__media svg{width:100%;height:100%}
+  .gcard__overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(8,9,13,.55) 65%,rgba(8,9,13,.92));padding:36px 32px;display:flex;flex-direction:column;justify-content:flex-end;color:var(--cream)}
+  .gcard__kicker{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+  .gcard__title{font-family:var(--display);font-size:34px;font-weight:300;line-height:.96;letter-spacing:-.025em;font-variation-settings:"opsz" 144}
+  .gcard__count{margin-top:16px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:rgba(244,236,225,.5);letter-spacing:.16em;text-transform:uppercase}
+  .gcard__count span:last-child{font-family:var(--display);font-size:18px;color:var(--cream);letter-spacing:0}
+
+  /* ERAS */
+  .eras{display:grid;gap:0;border-top:1px solid var(--rule)}
+  .era{display:grid;grid-template-columns:auto 1fr auto;gap:80px;padding:70px 0;border-bottom:1px solid var(--rule);align-items:center;transition:padding-left .6s var(--ease)}
+  .era:hover{padding-left:30px;background:linear-gradient(90deg,rgba(200,169,106,.05),transparent)}
+  .era__year{font-family:var(--display);font-size:clamp(60px,9vw,148px);font-weight:300;letter-spacing:-.045em;line-height:.85;color:var(--gold-2);font-variation-settings:"opsz" 144;min-width:340px}
+  .era__year small{display:block;font-family:var(--sans);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:rgba(244,236,225,.5);margin-top:18px;font-weight:500}
+  .era__name{font-family:var(--display);font-size:34px;font-weight:300;line-height:1.05;letter-spacing:-.02em;margin-bottom:12px}
+  .era__lede{font-size:13px;line-height:1.65;color:rgba(244,236,225,.6);max-width:520px;font-weight:300}
+  .era__count{font-family:var(--display);font-size:42px;font-weight:300;color:rgba(244,236,225,.5);font-variation-settings:"opsz" 144}
+  .era__count small{display:block;font-family:var(--sans);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,236,225,.4);margin-top:6px;text-align:right}
+
+  /* MAKERS */
+  .makers{display:grid;grid-template-columns:repeat(2,1fr);gap:0 80px;border-top:1px solid var(--rule)}
+  .maker{display:flex;justify-content:space-between;align-items:baseline;padding:32px 0;border-bottom:1px solid var(--rule);font-family:var(--display);font-size:34px;font-weight:300;letter-spacing:-.02em;font-variation-settings:"opsz" 144;transition:color .35s,padding-left .5s var(--ease),letter-spacing .5s var(--ease)}
+  .maker:hover{color:var(--gold-2);padding-left:24px;letter-spacing:0}
+  .maker em{font-style:italic;opacity:.55;font-size:.5em;letter-spacing:.06em;margin-left:14px;font-family:var(--sans);font-weight:400;text-transform:uppercase;vertical-align:.4em}
+  .maker__count{font-family:var(--sans);font-size:11px;letter-spacing:.22em;color:rgba(244,236,225,.4);font-weight:400;text-transform:uppercase}
+
+  /* MARQUEE */
+  .marquee{padding:60px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);overflow:hidden;white-space:nowrap;background:var(--ink-2)}
+  .marquee__track{display:inline-flex;gap:80px;animation:scroll 40s linear infinite;font-family:var(--display);font-size:clamp(60px,9vw,140px);font-weight:300;letter-spacing:-.04em;line-height:1;font-variation-settings:"opsz" 144}
+  .marquee__track span{display:inline-flex;align-items:center;gap:80px}
+  .marquee__track span::after{content:"✦";color:var(--gold);font-size:.5em}
+  .marquee__track em{font-style:italic;color:var(--gold-2)}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* FOOTER */
+  footer{position:relative;padding:140px 36px 50px;border-top:1px solid var(--rule);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;z-index:2}
+  footer h4{grid-column:1/-1;font-family:var(--display);font-size:clamp(48px,7vw,108px);font-weight:300;line-height:.9;letter-spacing:-.04em;max-width:14ch;margin-bottom:90px;font-variation-settings:"opsz" 144}
+  footer h4 em{color:var(--gold-2);font-style:italic}
+  footer .col{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(244,236,225,.55);display:grid;gap:14px;align-content:start}
+  footer .col strong{display:block;color:var(--cream);font-weight:600;letter-spacing:.22em;margin-bottom:14px;font-size:10px}
+  footer .col a{display:block;transition:color .3s,padding-left .35s var(--ease)}
+  footer .col a:hover{color:var(--gold-2);padding-left:6px}
+  .credit{grid-column:1/-1;margin-top:90px;padding-top:30px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,236,225,.4)}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(50px);transition:opacity 1.2s var(--ease),transform 1.2s var(--ease)}
+  .reveal.is-in{opacity:1;transform:translateY(0)}
+  .reveal-stagger > *{opacity:0;transform:translateY(40px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+  .reveal-stagger.is-in > *{opacity:1;transform:translateY(0)}
+  .reveal-stagger.is-in > *:nth-child(2){transition-delay:.1s}
+  .reveal-stagger.is-in > *:nth-child(3){transition-delay:.2s}
+  .reveal-stagger.is-in > *:nth-child(4){transition-delay:.3s}
+  .reveal-stagger.is-in > *:nth-child(5){transition-delay:.4s}
+  .reveal-stagger.is-in > *:nth-child(6){transition-delay:.5s}
+
+  /* responsive */
+  @media(max-width:1100px){
+    .hero{grid-template-columns:1fr;padding:130px 24px 60px}
+    .hero__media{height:70vh;min-height:500px;margin-top:50px}
+    .feature,.galleries,.makers{grid-template-columns:1fr;gap:50px}
+    .galleries{gap:24px}
+    .era{grid-template-columns:auto 1fr;gap:40px}
+    .era__count{display:none}
+  }
+  @media(max-width:720px){
+    .nav{padding:18px 20px}
+    .nav__menu,.nav__cta{display:none}
+    .section{padding:100px 20px}
+    .section__head{grid-template-columns:1fr;gap:30px;margin-bottom:50px}
+    .section__lede{justify-self:start}
+    .hero{padding:120px 20px 60px}
+    .hero__meta{gap:0 30px}
+    .hero__meta b{font-size:28px}
+    .feature__body h3{font-size:48px}
+    .galleries{grid-template-columns:1fr}
+    .era{grid-template-columns:1fr;gap:20px;padding:50px 0}
+    .era__year{min-width:0;font-size:80px}
+    .makers{grid-template-columns:1fr;gap:0}
+    .maker{font-size:24px;padding:22px 0}
+    .marquee__track{font-size:60px;gap:40px}
+    footer{grid-template-columns:1fr 1fr;padding:100px 20px 40px}
+    footer h4{margin-bottom:50px}
+  }
+</style>
+</head>
+<body>
+
+<!-- shared SVG sculpture symbols -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="lit" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#fff8ec"/>
+      <stop offset="55%" stop-color="#ecdcc1"/>
+      <stop offset="100%" stop-color="#b8a37c"/>
+    </radialGradient>
+    <linearGradient id="bronze" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#5a3a1c"/>
+      <stop offset="55%" stop-color="#2c1808"/>
+      <stop offset="100%" stop-color="#0f0703"/>
+    </linearGradient>
+    <linearGradient id="marble" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f4ece1"/>
+      <stop offset="100%" stop-color="#b8a685"/>
+    </linearGradient>
+    <linearGradient id="basalt" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#3b3a36"/>
+      <stop offset="100%" stop-color="#0c0b09"/>
+    </linearGradient>
+
+    <!-- 1: seated figure -->
+    <symbol id="s1" viewBox="0 0 400 500">
+      <rect width="400" height="500" fill="url(#lit)"/>
+      <ellipse cx="200" cy="430" rx="140" ry="14" fill="#000" opacity=".22"/>
+      <ellipse cx="200" cy="430" rx="84" ry="6" fill="#000" opacity=".55"/>
+      <path d="M170 420 Q150 320 158 235 Q170 162 200 152 Q230 162 242 235 Q250 320 230 420 Z" fill="url(#bronze)"/>
+      <ellipse cx="200" cy="138" rx="38" ry="48" fill="url(#bronze)"/>
+      <ellipse cx="186" cy="135" rx="3" ry="4" fill="#f4ece1" opacity=".55"/>
+      <path d="M178 200 Q170 250 192 280" stroke="#0f0703" stroke-width="1.5" fill="none" opacity=".5"/>
+    </symbol>
+
+    <!-- 2: standing torso -->
+    <symbol id="s2" viewBox="0 0 400 500">
+      <rect width="400" height="500" fill="url(#lit)"/>
+      <ellipse cx="200" cy="455" rx="120" ry="10" fill="#000" opacity=".25"/>
+      <path d="M165 450 L165 380 Q160 280 175 200 Q185 130 200 130 Q215 130 225 200 Q240 280 235 380 L235 450 Z" fill="url(#marble)"/>
+      <ellipse cx="200" cy="118" rx="28" ry="34" fill="url(#marble)"/>
+      <path d="M172 200 L172 360" stroke="#7a6240" stroke-width="1" opacity=".4"/>
+      <path d="M228 200 L228 360" stroke="#7a6240" stroke-width="1" opacity=".4"/>
+    </symbol>
+
+    <!-- 3: head -->
+    <symbol id="s3" viewBox="0 0 400 500">
+      <rect width="400" height="500" fill="url(#lit)"/>
+      <ellipse cx="200" cy="440" rx="120" ry="10" fill="#000" opacity=".22"/>
+      <rect x="150" y="380" width="100" height="60" fill="#3b2614" opacity=".7"/>
+      <ellipse cx="200" cy="250" rx="92" ry="120" fill="url(#bronze)"/>
+      <path d="M155 250 Q200 290 245 250" stroke="#1a0e05" stroke-width="2" fill="none" opacity=".6"/>
+      <ellipse cx="178" cy="240" rx="6" ry="3" fill="#f4ece1" opacity=".5"/>
+      <ellipse cx="222" cy="240" rx="6" ry="3" fill="#f4ece1" opacity=".5"/>
+    </symbol>
+
+    <!-- 4: relief -->
+    <symbol id="s4" viewBox="0 0 400 500">
+      <rect width="400" height="500" fill="url(#lit)"/>
+      <rect x="60" y="80" width="280" height="360" fill="url(#marble)" opacity=".95"/>
+      <path d="M100 380 Q120 280 150 250 Q180 220 220 230 Q260 240 290 280 Q320 320 320 380 Z" fill="#9c8456" opacity=".6"/>
+      <circle cx="200" cy="200" r="32" fill="#9c8456" opacity=".55"/>
+      <path d="M70 100 L70 420 M330 100 L330 420" stroke="#7a6240" stroke-width="1.5" opacity=".5"/>
+    </symbol>
+
+    <!-- 5: animal/lion -->
+    <symbol id="s5" viewBox="0 0 400 500">
+      <rect width="400" height="500" fill="url(#lit)"/>
+      <ellipse cx="200" cy="430" rx="160" ry="14" fill="#000" opacity=".22"/>
+      <path d="M80 420 Q70 340 100 290 Q130 240 200 240 Q280 240 310 290 Q330 340 320 420 Z" fill="url(#basalt)"/>
+      <circle cx="320" cy="270" r="38" fill="url(#basalt)"/>
+      <path d="M295 245 Q290 220 305 210 M325 240 Q322 215 338 208" stroke="#0c0b09" stroke-width="3" fill="none"/>
+      <ellipse cx="335" cy="270" rx="3" ry="4" fill="#c8a96a" opacity=".7"/>
+    </symbol>
+
+    <!-- 6: votive -->
+    <symbol id="s6" viewBox="0 0 400 500">
+      <rect width="400" height="500" fill="url(#lit)"/>
+      <ellipse cx="200" cy="445" rx="100" ry="8" fill="#000" opacity=".22"/>
+      <path d="M180 440 L180 360 Q170 280 185 220 Q195 180 200 180 Q205 180 215 220 Q230 280 220 360 L220 440 Z" fill="url(#marble)"/>
+      <circle cx="200" cy="155" r="22" fill="url(#marble)"/>
+      <path d="M155 280 L180 260 M245 280 L220 260" stroke="#7a6240" stroke-width="2" fill="none" opacity=".5"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="cursor" id="cursor"></div>
+
+<header class="nav">
+  <a class="nav__brand" href="#"><span class="b1">FORM</span><span class="b2">GALLERY</span></a>
+  <nav class="nav__menu">
+    <a href="#featured">Atrium</a>
+    <a href="#now">Now on view</a>
+    <a href="#galleries">Galleries</a>
+    <a href="#eras">Eras</a>
+    <a href="#regions">Regions</a>
+    <a href="#makers">Makers</a>
+  </nav>
+  <a class="nav__cta" href="#">Enter the collection</a>
+  <div class="nav__progress" id="progress"></div>
+</header>
+
+<section class="hero">
+  <div class="hero__copy">
+    <p class="hero__kicker">A digital sculpture collection · est. 2024</p>
+    <h1 class="hero__title">Form,<br>in the <em><span class="accent">round.</span></em></h1>
+    <p class="hero__sub">Two hundred and thirty-one works, scanned in high fidelity and held in the round — antiquity through the twenty-first century, free for anyone to walk through.</p>
+    <div class="hero__meta">
+      <div><b>231</b>Works</div>
+      <div><b>13</b>Galleries</div>
+      <div><b>14</b>Regions</div>
+      <div><b>41</b>Makers</div>
+    </div>
+  </div>
+  <div class="hero__media" id="heroMedia">
+    <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s1"/></svg>
+    <div class="floor"></div>
+    <div class="hero__chip"><i></i>Featured this week</div>
+  </div>
+  <div class="hero__caption">
+    <span>Kongo Maternity Figure · Mayombe region · mid-19c</span>
+    <span class="scroll">Scroll<i></i></span>
+  </div>
+</section>
+
+<!-- FEATURED EDITORIAL -->
+<section class="section" id="featured">
+  <div class="section__head reveal">
+    <div>
+      <p class="section__kicker">Curator's note · No. 001</p>
+      <h2 class="section__title">A figure that <em>holds</em> its century.</h2>
+    </div>
+    <p class="section__lede">Each week we open one work to the front of the room and write what it has been doing for the last hundred and fifty years.</p>
+  </div>
+
+  <div class="feature reveal">
+    <div class="feature__media">
+      <div class="feature__index">001</div>
+      <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s1"/></svg>
+    </div>
+    <div class="feature__body">
+      <h3>Kongo Maternity <em>Figure.</em></h3>
+      <p class="feature__intro">Carved sometime between 1845 and 1910 in the Mayombe region of what is now the Democratic Republic of the Congo. Wood, glass, glass beads, brass tacks. Twenty-five centimeters tall and impossibly grave.</p>
+      <dl class="feature__meta">
+        <dt>Maker</dt><dd>Kongo artist · unrecorded</dd>
+        <dt>Origin</dt><dd>Mayombe, DRC</dd>
+        <dt>Materials</dt><dd>Wood, glass, brass tacks, pigment</dd>
+        <dt>Dimensions</dt><dd>H 25.7 · W 10.5 · D 10.2 cm</dd>
+        <dt>Held by</dt><dd>Private collection, Belgium</dd>
+      </dl>
+      <a class="feature__cta" href="#">Walk around the figure</a>
+    </div>
+  </div>
+</section>
+
+<!-- NOW ON VIEW RAIL -->
+<section class="section" id="now">
+  <div class="section__head reveal">
+    <div>
+      <p class="section__kicker">New acquisitions</p>
+      <h2 class="section__title">Now on <em>view.</em></h2>
+    </div>
+    <p class="section__lede">Six works added to the collection in the last fortnight. Drag to wander.</p>
+  </div>
+  <div class="rail-wrap reveal">
+    <div class="rail" id="rail">
+      <article class="rail__item">
+        <div class="rail__media"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s2"/></svg><div class="rail__num">N° 226</div></div>
+        <p class="rail__kicker">Greek archaic · 6th c. BCE</p>
+        <h4 class="rail__title">Limestone figure of a woman</h4>
+        <p class="rail__sub">Cypriot capital, attr. workshop of Idalion</p>
+      </article>
+      <article class="rail__item">
+        <div class="rail__media"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s3"/></svg><div class="rail__num">N° 227</div></div>
+        <p class="rail__kicker">Egyptian late period</p>
+        <h4 class="rail__title">Head of a male or female figure</h4>
+        <p class="rail__sub">Bronze, lost-wax, c. 600 BCE</p>
+      </article>
+      <article class="rail__item">
+        <div class="rail__media"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s5"/></svg><div class="rail__num">N° 228</div></div>
+        <p class="rail__kicker">Assyrian relief</p>
+        <h4 class="rail__title">Lion released from cage</h4>
+        <p class="rail__sub">Nineveh, royal hunt cycle</p>
+      </article>
+      <article class="rail__item">
+        <div class="rail__media"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s4"/></svg><div class="rail__num">N° 229</div></div>
+        <p class="rail__kicker">Roman, marble</p>
+        <h4 class="rail__title">Anthropoid sarcophagus fragment</h4>
+        <p class="rail__sub">Asia Minor, 2nd c. CE</p>
+      </article>
+      <article class="rail__item">
+        <div class="rail__media"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s6"/></svg><div class="rail__num">N° 230</div></div>
+        <p class="rail__kicker">Cycladic</p>
+        <h4 class="rail__title">Marble female figure</h4>
+        <p class="rail__sub">Final neolithic, c. 2700 BCE</p>
+      </article>
+      <article class="rail__item">
+        <div class="rail__media"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s1"/></svg><div class="rail__num">N° 231</div></div>
+        <p class="rail__kicker">Sub-Saharan Africa</p>
+        <h4 class="rail__title">Helmet mask, four faces</h4>
+        <p class="rail__sub">Yoruba, early 20th c.</p>
+      </article>
+    </div>
+    <div class="rail-hint"><span><i></i>Drag to scroll</span></div>
+  </div>
+</section>
+
+<!-- GALLERIES -->
+<section class="section" id="galleries">
+  <div class="section__head reveal">
+    <div>
+      <p class="section__kicker">Thirteen rooms</p>
+      <h2 class="section__title">The <em>galleries.</em></h2>
+    </div>
+    <p class="section__lede">Each room is a slow walk through one geography or one century. Open one and the lights come on.</p>
+  </div>
+
+  <div class="galleries reveal-stagger">
+    <a class="gcard" href="#">
+      <div class="gcard__media"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s5"/></svg></div>
+      <div class="gcard__overlay">
+        <p class="gcard__kicker">Mesopotamia</p>
+        <h3 class="gcard__title">Assyrian palace reliefs</h3>
+        <div class="gcard__count"><span>9th — 7th c. BCE</span><span>24</span></div>
+      </div>
+    </a>
+    <a class="gcard" href="#">
+      <div class="gcard__media"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s2"/></svg></div>
+      <div class="gcard__overlay">
+        <p class="gcard__kicker">Mediterranean</p>
+        <h3 class="gcard__title">Greek archaic &amp; classical</h3>
+        <div class="gcard__count"><span>700 — 323 BCE</span><span>31</span></div>
+      </div>
+    </a>
+    <a class="gcard" href="#">
+      <div class="gcard__media"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s3"/></svg></div>
+      <div class="gcard__overlay">
+        <p class="gcard__kicker">North Africa</p>
+        <h3 class="gcard__title">Egyptian dynastic</h3>
+        <div class="gcard__count"><span>3100 BCE — 30 BCE</span><span>28</span></div>
+      </div>
+    </a>
+    <a class="gcard" href="#">
+      <div class="gcard__media"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s1"/></svg></div>
+      <div class="gcard__overlay">
+        <p class="gcard__kicker">Sub-Saharan Africa</p>
+        <h3 class="gcard__title">Kongo &amp; Mayombe</h3>
+        <div class="gcard__count"><span>17th — 20th c.</span><span>19</span></div>
+      </div>
+    </a>
+    <a class="gcard" href="#">
+      <div class="gcard__media"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s6"/></svg></div>
+      <div class="gcard__overlay">
+        <p class="gcard__kicker">Aegean</p>
+        <h3 class="gcard__title">Cycladic figures</h3>
+        <div class="gcard__count"><span>3300 — 2000 BCE</span><span>14</span></div>
+      </div>
+    </a>
+    <a class="gcard" href="#">
+      <div class="gcard__media"><svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><use href="#s4"/></svg></div>
+      <div class="gcard__overlay">
+        <p class="gcard__kicker">Modern</p>
+        <h3 class="gcard__title">Twentieth century in the round</h3>
+        <div class="gcard__count"><span>1900 — 1999</span><span>22</span></div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee__track">
+    <span>antiquity</span>
+    <span>archaic</span>
+    <span><em>classical</em></span>
+    <span>hellenistic</span>
+    <span>byzantine</span>
+    <span>medieval</span>
+    <span><em>renaissance</em></span>
+    <span>baroque</span>
+    <span>modern</span>
+    <span>contemporary</span>
+    <span>antiquity</span>
+    <span>archaic</span>
+    <span><em>classical</em></span>
+    <span>hellenistic</span>
+    <span>byzantine</span>
+    <span>medieval</span>
+    <span><em>renaissance</em></span>
+    <span>baroque</span>
+    <span>modern</span>
+    <span>contemporary</span>
+  </div>
+</div>
+
+<!-- ERAS -->
+<section class="section" id="eras">
+  <div class="section__head reveal">
+    <div>
+      <p class="section__kicker">Five thousand years</p>
+      <h2 class="section__title">Read by <em>era.</em></h2>
+    </div>
+    <p class="section__lede">A long room with the floor sloping away from you. Walk one direction and you walk into deep time.</p>
+  </div>
+
+  <div class="eras reveal-stagger">
+    <div class="era">
+      <div class="era__year">−3000<small>before the common era</small></div>
+      <div><h3 class="era__name">Earliest forms</h3><p class="era__lede">Cycladic figures, predynastic Egypt, the first time stone is asked to remember a face. Eighteen works.</p></div>
+      <div class="era__count">18<small>works</small></div>
+    </div>
+    <div class="era">
+      <div class="era__year">−700<small>archaic period</small></div>
+      <div><h3 class="era__name">Greek archaic &amp; the Levant</h3><p class="era__lede">Stiff frontality, long curls, the first half-smiles. Limestone votive figures from Cyprus and Cycladic-influenced kouroi.</p></div>
+      <div class="era__count">42<small>works</small></div>
+    </div>
+    <div class="era">
+      <div class="era__year">−100<small>classical &amp; hellenistic</small></div>
+      <div><h3 class="era__name">Bodies in motion</h3><p class="era__lede">Polykleitos, the first contrapposto, the Hellenistic taste for drama. Roman copies and originals from Asia Minor.</p></div>
+      <div class="era__count">56<small>works</small></div>
+    </div>
+    <div class="era">
+      <div class="era__year">1500<small>renaissance to baroque</small></div>
+      <div><h3 class="era__name">The new figure</h3><p class="era__lede">Italian and Northern bronzes, polychrome wood, devotional altarpieces. The hand of an individual sculptor returns.</p></div>
+      <div class="era__count">38<small>works</small></div>
+    </div>
+    <div class="era">
+      <div class="era__year">1900<small>modern century</small></div>
+      <div><h3 class="era__name">Twentieth century in the round</h3><p class="era__lede">Brâncuşi, Boccioni, Hepworth — sculpture as object and as idea. Includes the Boccioni Bottle Development scan.</p></div>
+      <div class="era__count">77<small>works</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- MAKERS -->
+<section class="section" id="makers">
+  <div class="section__head reveal">
+    <div>
+      <p class="section__kicker">Forty-one hands</p>
+      <h2 class="section__title">The <em>makers.</em></h2>
+    </div>
+    <p class="section__lede">Some named, some not. We list them flat, alphabetically, because the unrecorded carver of a Kongo figure deserves the same line as Brâncuşi.</p>
+  </div>
+
+  <div class="makers reveal-stagger">
+    <a class="maker" href="#"><span>Umberto Boccioni <em>1882–1916</em></span><span class="maker__count">3 works</span></a>
+    <a class="maker" href="#"><span>Constantin Brâncuşi <em>1876–1957</em></span><span class="maker__count">5 works</span></a>
+    <a class="maker" href="#"><span>Edgar Degas <em>1834–1917</em></span><span class="maker__count">4 works</span></a>
+    <a class="maker" href="#"><span>Alberto Giacometti <em>1901–1966</em></span><span class="maker__count">6 works</span></a>
+    <a class="maker" href="#"><span>Barbara Hepworth <em>1903–1975</em></span><span class="maker__count">3 works</span></a>
+    <a class="maker" href="#"><span>Aristide Maillol <em>1861–1944</em></span><span class="maker__count">2 works</span></a>
+    <a class="maker" href="#"><span>Henry Moore <em>1898–1986</em></span><span class="maker__count">4 works</span></a>
+    <a class="maker" href="#"><span>Auguste Rodin <em>1840–1917</em></span><span class="maker__count">7 works</span></a>
+    <a class="maker" href="#"><span>Kongo artist <em>unrecorded</em></span><span class="maker__count">9 works</span></a>
+    <a class="maker" href="#"><span>Yoruba master <em>unrecorded</em></span><span class="maker__count">6 works</span></a>
+    <a class="maker" href="#"><span>Cypriot workshops <em>archaic</em></span><span class="maker__count">11 works</span></a>
+    <a class="maker" href="#"><span>Assyrian palace ateliers <em>9th–7th c. BCE</em></span><span class="maker__count">14 works</span></a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <h4>Walk in. <em>Stay.</em> Touch nothing.</h4>
+  <div class="col">
+    <strong>The collection</strong>
+    <a href="#">Atrium</a>
+    <a href="#">Galleries</a>
+    <a href="#">Eras</a>
+    <a href="#">Regions</a>
+    <a href="#">Makers</a>
+  </div>
+  <div class="col">
+    <strong>About</strong>
+    <a href="#">Project</a>
+    <a href="#">How we scan</a>
+    <a href="#">Conservators</a>
+    <a href="#">Press</a>
+  </div>
+  <div class="col">
+    <strong>Stay close</strong>
+    <a href="#">Newsletter</a>
+    <a href="#">RSS</a>
+    <a href="#">GitHub</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="credit">
+    <span>© 2026 Form Gallery · Open access · CC BY-NC 4.0</span>
+    <span>Hosted on GitHub Pages</span>
+  </div>
+</footer>
+
+<script>
+  // custom cursor
+  const cursor = document.getElementById('cursor');
+  let mx=innerWidth/2,my=innerHeight/2,cx=mx,cy=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+  function tick(){cx+=(mx-cx)*.22;cy+=(my-cy)*.22;cursor.style.transform=`translate(${cx}px,${cy}px) translate(-50%,-50%)`;requestAnimationFrame(tick)}
+  tick();
+  document.querySelectorAll('a,.gcard,.maker,.rail__item,.feature__cta,.nav__cta').forEach(el=>{
+    el.addEventListener('mouseenter',()=>cursor.classList.add('is-hover'));
+    el.addEventListener('mouseleave',()=>cursor.classList.remove('is-hover'));
+  });
+
+  // hero parallax
+  const heroMedia = document.getElementById('heroMedia');
+  const hero = document.querySelector('.hero');
+  hero.addEventListener('mousemove',e=>{
+    const r = hero.getBoundingClientRect();
+    const x = (e.clientX - r.left)/r.width - .5;
+    const y = (e.clientY - r.top)/r.height - .5;
+    heroMedia.style.transform = `perspective(1400px) rotateY(${x*8}deg) rotateX(${-y*5}deg) translateZ(0) scale(1.02)`;
+  });
+  hero.addEventListener('mouseleave',()=>{ heroMedia.style.transform = 'perspective(1400px) rotateY(0) rotateX(0) scale(1)'; });
+
+  // scroll progress
+  const progress = document.getElementById('progress');
+  addEventListener('scroll',()=>{
+    const h = document.documentElement.scrollHeight - innerHeight;
+    progress.style.width = (scrollY/h*100)+'%';
+  },{passive:true});
+
+  // intersection reveal
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); }});
+  },{threshold:.12, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal,.reveal-stagger').forEach(el=>io.observe(el));
+
+  // drag to scroll rail
+  const rail = document.getElementById('rail');
+  let down=false,startX=0,sl=0;
+  rail.addEventListener('pointerdown',e=>{down=true;startX=e.pageX;sl=rail.scrollLeft;rail.setPointerCapture(e.pointerId);cursor.classList.add('is-drag')});
+  rail.addEventListener('pointermove',e=>{if(!down)return;rail.scrollLeft=sl-(e.pageX-startX)*1.2});
+  ['pointerup','pointercancel','pointerleave'].forEach(ev=>rail.addEventListener(ev,()=>{down=false;cursor.classList.remove('is-drag')}));
+
+  // gentle hero auto-rotation
+  let t=0;
+  function rotate(){
+    if(!hero.matches(':hover')){
+      t+=.0035;
+      heroMedia.style.transform = `perspective(1400px) rotateY(${Math.sin(t)*4}deg) rotateX(${Math.cos(t*.7)*2}deg) scale(1.01)`;
+    }
+    requestAnimationFrame(rotate);
+  }
+  rotate();
+</script>
+</body>
+</html>
